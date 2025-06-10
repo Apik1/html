@@ -154,12 +154,50 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .content-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .content-title {
             font-size: 2rem;
             font-weight: 700;
             color: #2d3748;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 12px 16px 12px 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 300px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: #718096;
         }
 
         .options-menu {
@@ -215,15 +253,15 @@
             background-color: #f8f9fa;
         }
 
-        /* Connections List */
-        .connections-container {
+        /* Connections/Users List */
+        .items-container {
             background: white;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             overflow: hidden;
         }
 
-        .connection-item {
+        .item-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -232,22 +270,22 @@
             transition: all 0.3s ease;
         }
 
-        .connection-item:last-child {
+        .item-row:last-child {
             border-bottom: none;
         }
 
-        .connection-item:hover {
+        .item-row:hover {
             background: #f8f9fa;
             transform: translateX(5px);
         }
 
-        .connection-info {
+        .item-info {
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        .connection-icon {
+        .item-icon {
             width: 40px;
             height: 40px;
             border-radius: 8px;
@@ -259,32 +297,46 @@
             font-weight: bold;
         }
 
-        .connection-name {
+        .item-name {
             font-size: 1.1rem;
             font-weight: 600;
             color: #2d3748;
         }
 
-        .connection-status {
+        .item-details {
             font-size: 0.9rem;
             color: #718096;
         }
 
-        .update-btn {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-            color: white;
+        .action-btn {
             border: none;
             padding: 10px 20px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
+        }
+
+        .update-btn {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
             box-shadow: 0 2px 10px rgba(72, 187, 120, 0.3);
         }
 
         .update-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            box-shadow: 0 2px 10px rgba(237, 137, 54, 0.3);
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(237, 137, 54, 0.4);
         }
 
         /* Empty State */
@@ -324,13 +376,13 @@
     <div class="container">
         <!-- Sidebar -->
         <nav class="sidebar">
-            <div class="nav-item active" onclick="navigateTo('connections')">
+            <div class="nav-item" onclick="navigateTo('connections')">
                 <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
                 </svg>
                 Connections
             </div>
-            <div class="nav-item" onclick="navigateTo('users')">
+            <div class="nav-item active" onclick="navigateTo('users')">
                 <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
@@ -341,21 +393,37 @@
         <!-- Main Content -->
         <main class="main-content">
             <div class="content-header">
-                <h2 class="content-title">Connections</h2>
+                <div class="content-left">
+                    <h2 class="content-title" id="pageTitle">Users</h2>
+                    <div class="search-container" id="searchContainer">
+                        <div class="search-icon">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            placeholder="Search users..." 
+                            id="searchInput"
+                            oninput="filterItems()"
+                        >
+                    </div>
+                </div>
                 <div class="options-menu">
                     <button class="options-btn" onclick="toggleOptionsMenu()">...</button>
                     <div class="options-dropdown" id="optionsDropdown">
-                        <div class="options-item" onclick="createNewUser()">
+                        <div class="options-item" onclick="createNewItem()">
                             <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
                             </svg>
-                            Create New User
+                            <span id="createButtonText">Create New User</span>
                         </div>
                         <div class="options-item">
                             <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
                             </svg>
-                            Import Connections
+                            <span id="importButtonText">Import Users</span>
                         </div>
                         <div class="options-item">
                             <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
@@ -367,15 +435,15 @@
                 </div>
             </div>
 
-            <!-- Connections List -->
-            <div class="connections-container" id="connectionsContainer">
-                <!-- Sample connections will be populated by JavaScript -->
+            <!-- Dynamic Content Container -->
+            <div class="items-container" id="itemsContainer">
+                <!-- Content will be populated by JavaScript -->
             </div>
         </main>
     </div>
 
     <script>
-        // Sample connections data
+        // Sample data
         const connections = [
             { name: "Google OAuth", type: "Social", status: "Active" },
             { name: "Microsoft AD", type: "Enterprise", status: "Active" },
@@ -384,8 +452,21 @@
             { name: "Facebook", type: "Social", status: "Active" }
         ];
 
+        const users = [
+            { name: "John Doe", email: "john@example.com", status: "Active", lastLogin: "2 hours ago" },
+            { name: "Jane Smith", email: "jane@example.com", status: "Active", lastLogin: "1 day ago" },
+            { name: "Bob Johnson", email: "bob@example.com", status: "Inactive", lastLogin: "1 week ago" },
+            { name: "Alice Brown", email: "alice@example.com", status: "Active", lastLogin: "5 minutes ago" },
+            { name: "Charlie Wilson", email: "charlie@example.com", status: "Active", lastLogin: "3 days ago" }
+        ];
+
+        let currentPage = 'users';
+        let filteredData = [...users];
+
         // Navigation functions
         function navigateTo(page) {
+            currentPage = page;
+            
             // Remove active class from all nav items
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
@@ -394,12 +475,48 @@
             // Add active class to clicked item
             event.target.classList.add('active');
             
-            // Update page title
-            document.querySelector('.content-title').textContent = 
-                page === 'connections' ? 'Connections' : 'Users';
+            // Update page content
+            updatePageContent();
             
-            // For now, both pages show the same content
-            renderConnections();
+            // Render appropriate data
+            renderItems();
+        }
+
+        function updatePageContent() {
+            const pageTitle = document.getElementById('pageTitle');
+            const searchContainer = document.getElementById('searchContainer');
+            const createButtonText = document.getElementById('createButtonText');
+            const importButtonText = document.getElementById('importButtonText');
+            const searchInput = document.getElementById('searchInput');
+            
+            if (currentPage === 'connections') {
+                pageTitle.textContent = 'Connections';
+                searchContainer.style.display = 'none';
+                createButtonText.textContent = 'Create New Connection';
+                importButtonText.textContent = 'Import Connections';
+                filteredData = [...connections];
+            } else {
+                pageTitle.textContent = 'Users';
+                searchContainer.style.display = 'block';
+                createButtonText.textContent = 'Create New User';
+                importButtonText.textContent = 'Import Users';
+                searchInput.value = '';
+                filteredData = [...users];
+            }
+        }
+
+        // Search functionality
+        function filterItems() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (currentPage === 'users') {
+                filteredData = users.filter(user => 
+                    user.name.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            renderItems();
         }
 
         // Toggle user dropdown menu
@@ -414,50 +531,90 @@
             dropdown.classList.toggle('show');
         }
 
-        // Create new user function
-        function createNewUser() {
-            alert('Create New User functionality will be implemented here');
+        // Create new item function
+        function createNewItem() {
+            if (currentPage === 'users') {
+                // TODO: Implement Auth0 SDK integration for creating new user
+                // This should call Auth0 Management API to create a new user
+                // Example: managementApi.createUser({...userData})
+                alert('Create New User functionality - TODO: Implement Auth0 SDK integration');
+            } else {
+                // TODO: Implement Auth0 SDK integration for creating new connection
+                // This should call Auth0 Management API to create a new connection
+                // Example: managementApi.createConnection({...connectionData})
+                alert('Create New Connection functionality - TODO: Implement Auth0 SDK integration');
+            }
             toggleOptionsMenu();
         }
 
-        // Update certificate function
+        // Action button functions
         function updateCertificate(connectionName) {
-            alert(`Update certificate for ${connectionName} - functionality will be implemented here`);
+            // TODO: Implement Auth0 SDK integration for updating connection certificate
+            // This should call Auth0 Management API to update the connection certificate
+            // Example: managementApi.updateConnection(connectionId, {certificate: newCertificate})
+            alert(`Update certificate for ${connectionName} - TODO: Implement Auth0 SDK integration`);
         }
 
-        // Render connections list
-        function renderConnections() {
-            const container = document.getElementById('connectionsContainer');
+        function resetUserMFA(userName) {
+            // TODO: Implement Auth0 SDK integration for resetting user's MFA
+            // This should call Auth0 Management API to reset the user's MFA
+            // Example: managementApi.deleteUserMultifactor(userId, provider)
+            alert(`Reset MFA for ${userName} - TODO: Implement Auth0 SDK integration`);
+        }
+
+        // Render items list
+        function renderItems() {
+            const container = document.getElementById('itemsContainer');
             
-            if (connections.length === 0) {
+            if (filteredData.length === 0) {
+                const itemType = currentPage === 'users' ? 'users' : 'connections';
                 container.innerHTML = `
                     <div class="empty-state">
                         <svg class="empty-icon" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
                         </svg>
-                        <h3>No connections found</h3>
-                        <p>Create your first connection to get started</p>
+                        <h3>No ${itemType} found</h3>
+                        <p>${currentPage === 'users' ? 'Try adjusting your search or create your first user' : 'Create your first connection to get started'}</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = connections.map(connection => `
-                <div class="connection-item">
-                    <div class="connection-info">
-                        <div class="connection-icon">
-                            ${connection.name.charAt(0)}
+            if (currentPage === 'users') {
+                container.innerHTML = filteredData.map(user => `
+                    <div class="item-row">
+                        <div class="item-info">
+                            <div class="item-icon">
+                                ${user.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                            </div>
+                            <div>
+                                <div class="item-name">${user.name}</div>
+                                <div class="item-details">${user.email} • ${user.status} • Last login: ${user.lastLogin}</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="connection-name">${connection.name}</div>
-                            <div class="connection-status">${connection.type} • ${connection.status}</div>
-                        </div>
+                        <button class="action-btn reset-btn" onclick="resetUserMFA('${user.name}')">
+                            Reset User's MFA
+                        </button>
                     </div>
-                    <button class="update-btn" onclick="updateCertificate('${connection.name}')">
-                        Update Certificate
-                    </button>
-                </div>
-            `).join('');
+                `).join('');
+            } else {
+                container.innerHTML = filteredData.map(connection => `
+                    <div class="item-row">
+                        <div class="item-info">
+                            <div class="item-icon">
+                                ${connection.name.charAt(0)}
+                            </div>
+                            <div>
+                                <div class="item-name">${connection.name}</div>
+                                <div class="item-details">${connection.type} • ${connection.status}</div>
+                            </div>
+                        </div>
+                        <button class="action-btn update-btn" onclick="updateCertificate('${connection.name}')">
+                            Update Certificate
+                        </button>
+                    </div>
+                `).join('');
+            }
         }
 
         // Close dropdowns when clicking outside
@@ -476,7 +633,8 @@
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            renderConnections();
+            updatePageContent();
+            renderItems();
         });
     </script>
 </body>
